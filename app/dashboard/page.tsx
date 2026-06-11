@@ -2,14 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getStoredSettings, applyTheme } from "../../lib/auth";
 
 export default function Dashboard() {
+  const [selectedContact, setSelectedContact] = useState<string | null>(null);
+
+  useEffect(() => {
+    const settings = getStoredSettings();
+    applyTheme(settings.theme || "light");
+  }, []);
 
   return (
-    <div className="w-screen h-screen bg-[#f5f6f8] flex overflow-hidden">
+    <div className="w-screen h-screen bg-[#f5f6f8] text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex overflow-hidden">
 
       {/* Sidebar */}
-      <aside className="w-[275px] bg-white border-r border-gray-100 flex flex-col justify-between flex-shrink-0">
+      <aside className="w-[275px] bg-white border-r border-gray-100 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between flex-shrink-0">
         <div>
 
           {/* Logo */}
@@ -63,8 +71,7 @@ export default function Dashboard() {
               Profile
             </button>
 
-          <Link href="/settings">
-  <button className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
+          <Link href="/settings" className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="w-5 h-5"
@@ -86,8 +93,7 @@ export default function Dashboard() {
     </svg>
 
     Settings
-  </button>
-</Link>
+  </Link>
 
           </nav>
         </div>
@@ -95,34 +101,7 @@ export default function Dashboard() {
         {/* Bottom */}
         <div className="p-4">
 
-          <div className="bg-white border border-gray-100 rounded-xl p-3 mb-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/profile.jpg"
-                alt="Profile"
-                width={45}
-                height={45}
-                className="rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-medium text-sm">Alex Johnson</h3>
-                <p className="text-xs text-gray-500">Premium Member</p>
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-green-50 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">👑</span>
-              <h3 className="font-semibold text-green-700">Upgrade to Premium</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">
-              Unlock advanced features and personalized insights.
-            </p>
-            <button className="w-full bg-green-600 text-white py-2 rounded-lg font-medium text-sm hover:bg-green-700 transition-colors">
-              Upgrade Now
-            </button>
-          </div>
 
         </div>
       </aside>
@@ -134,9 +113,9 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-[42px] font-semibold text-cyan-800 leading-tight">
-              Welcome to NutriPlan
+              Welcome to NutriPlan!
             </h1>
-            <p className="text-base text-gray-500 mt-1">
+            <p className="text-base text-gray-500 mt-1 dark:text-slate-400">
               Your personalized nutrition dashboard
             </p>
           </div>
@@ -150,57 +129,45 @@ export default function Dashboard() {
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
 
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Image
-                src="/profile.jpg"
-                alt="User"
-                width={45}
-                height={45}
-                className="rounded-full object-cover"
-              />
-              <span className="font-medium text-sm">Alex Johnson</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+
           </div>
         </div>
 
         {/* Top Feature Cards */}
         <div className="grid grid-cols-3 gap-6 mb-6">
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
+            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
             </div>
             <h3 className="text-base font-semibold mb-1">Personalized Nutrition</h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm dark:text-slate-400">
               Tailored meal plans that adapt to your unique dietary needs, preferences, and fitness goals.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
+            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
               </svg>
             </div>
             <h3 className="text-base font-semibold mb-1">AI-Powered Discovery</h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm dark:text-slate-400">
               Our smart engine suggests new recipes and snacks based on what you actually love to eat.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
+            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
             </div>
             <h3 className="text-base font-semibold mb-1">Seamless Integration</h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm dark:text-slate-400">
               Automatically sync your meal plans with popular grocery delivery services in just one tap.
             </p>
           </div>
@@ -218,12 +185,10 @@ export default function Dashboard() {
               </svg>
               <h3 className="text-cyan-700 text-base font-semibold">AI Meal Planner</h3>
             </div>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-gray-500 text-sm mb-6 dark:text-slate-400">
               Generate full-week nutritional schedules in seconds based on your specific macro targets.
             </p>
-            <button className="text-cyan-700 text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all">
-              Get Started <span>→</span>
-            </button>
+           
             {/* Background decoration */}
             <div className="absolute right-4 bottom-4 opacity-5">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-cyan-700" fill="currentColor" viewBox="0 0 24 24">
@@ -240,12 +205,10 @@ export default function Dashboard() {
               </svg>
               <h3 className="text-cyan-700 text-base font-semibold">Grocery Generator</h3>
             </div>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-gray-500 text-sm mb-6 dark:text-slate-400">
               Convert your weekly plan into an organized shopping list, sorted by aisle and availability.
             </p>
-            <button className="text-cyan-700 text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all">
-              Explore Lists <span>→</span>
-            </button>
+           
             {/* Background decoration */}
             <div className="absolute right-4 bottom-4 opacity-5">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-cyan-700" fill="currentColor" viewBox="0 0 24 24">
@@ -255,19 +218,17 @@ export default function Dashboard() {
           </div>
 
           {/* Nutrient Analyzer */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm relative overflow-hidden">
+          <div className="bg-white rounded-2xl p-6 shadow-sm relative overflow-hidden dark:bg-slate-900">
             <div className="flex items-center gap-3 mb-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
               </svg>
               <h3 className="text-orange-500 text-base font-semibold">Nutrient Analyzer</h3>
             </div>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-gray-500 text-sm mb-6 dark:text-slate-400">
               Deep-dive into your intake with laboratory-grade precision for vitamins, minerals, and macros.
             </p>
-            <button className="text-orange-500 text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all">
-              View Stats <span>→</span>
-            </button>
+           
             {/* Background decoration */}
             <div className="absolute right-4 bottom-4 opacity-5">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
@@ -365,10 +326,10 @@ export default function Dashboard() {
             <Image src="/logo.png" alt="NutriPlan Logo" width={28} height={28} />
             <div>
               <p className="text-sm font-semibold text-cyan-800">NutriPlan</p>
-              <p className="text-xs text-gray-500">© 2024 NutriPlan. All rights reserved.</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400">© 2024 NutriPlan. All rights reserved.</p>
             </div>
           </div>
-          <div className="flex gap-8 text-sm text-gray-500">
+          <div className="flex gap-8 text-sm text-gray-500 dark:text-slate-400">
             <button className="hover:text-gray-700 transition-colors">Privacy Policy</button>
             <button className="hover:text-gray-700 transition-colors">Terms of Service</button>
             <button className="hover:text-gray-700 transition-colors">Help Center</button>
