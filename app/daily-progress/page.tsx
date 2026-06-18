@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -15,10 +14,8 @@ import {
   Flame,
   Footprints,
   Target,
-  Trophy,
-  Plus,
-  ArrowUpRight,
-  ShieldCheck,
+  TrendingUp,
+  ChartPie,
 } from "lucide-react";
 
 export default function DailyProgressPage() {
@@ -28,6 +25,9 @@ export default function DailyProgressPage() {
     waterGoal: 0,
     targetWeight: 0,
     activityLevel: "",
+    calories: 0,
+    stepsGoal: 0,
+    profileImage: "",
   });
 
   const [dailyStats, setDailyStats] = useState({
@@ -52,51 +52,170 @@ export default function DailyProgressPage() {
     },
   });
 
-  const [milestones, setMilestones] = useState([
-    {
-      title: "Water Goal Progress",
-      progress: 0,
-    },
-    {
-      title: "Target Weight Goal",
-      progress: 0,
-    },
-    {
-      title: "Fitness Goal Progress",
-      progress: 0,
-    },
-  ]);
+  const [steps, setSteps] = useState(0);
 
   const [stepHeights, setStepHeights] = useState([
-    90, 70, 130, 240, 170, 120, 90,
+  0, 0, 0, 0, 0, 0, 0,
   ]);
 
-  useEffect(() => {
-    // Future database fetch
-    // fetchProfile();
-    // fetchDailyProgress();
 
-    console.log("Daily Progress Ready");
-  }, []);
-  const fetchProfile = async () => {
+  const currentDay = new Date().getDay();
+  const currentIndex = currentDay === 0 ? 6 : currentDay - 1;
+
+  
+  const [milestones, setMilestones] = useState<
+  {
+    title: string;
+    progress: number;
+    color: string;
+  }[]
+>([
+  {
+    title: "Water Goal Progress",
+    progress: 0,
+    color: "#0ea5e9",
+  },
+  {
+    title: "Target Weight Goal",
+    progress: 0,
+    color: "#f59e0b",
+  },
+  {
+    title: "Fitness Goal Progress",
+    progress: 0,
+    color: "#10b981",
+  },
+]);
+  
+ const fetchDailyProgress = async (profile: any) => {
   try {
-    const res = await fetch("/api/profile");
+    const res = await fetch("/api/daily-progress");
 
     if (!res.ok) return;
 
     const data = await res.json();
 
-    setProfileData({
-      fullName: data.fullName || "",
-      fitnessGoal: data.selectedGoal || "",
-      waterGoal: data.waterGoal || 0,
-      targetWeight: data.targetWeight || 0,
-      activityLevel: data.activityLevel || "",
-    });
+    console.log("Daily Progress =", data);
+
+    console.log("Weekly Steps =", data.weeklySteps);
+
+    console.log("Step Heights =", [
+      data.weeklySteps?.mon || 0,
+      data.weeklySteps?.tue || 0,
+      data.weeklySteps?.wed || 0,
+      data.weeklySteps?.thu || 0,
+      data.weeklySteps?.fri || 0,
+      data.weeklySteps?.sat || 0,
+      data.weeklySteps?.sun || 0,
+    ]);
+
+    const today = new Date().getDay();
+    const todayIndex = today === 0 ? 6 : today - 1;
+
+    const heights = [0, 0, 0, 0, 0, 0, 0];
+    heights[todayIndex] = Number(data.steps) || 0;
+
+    setStepHeights(heights);
+
+    console.log("data =", data);
+    console.log("data.steps =", data.steps);
+
+    setSteps(Number(data.steps) || 0);
+
+    setMilestones([
+      {
+        title: "Water Goal Progress",
+        progress:  Number (
+          Math.min(
+            (Number(data.water) / (profile.waterGoal || 1)) * 100,
+            100
+          ).toFixed(0)
+        ),
+        color: "#0ea5e9",
+      },
+      {
+        title: "Target Weight Goal",
+        progress:  Number (
+          Math.min(
+            (Number(data.weight) / (profile.targetWeight || 1)) * 100,
+            100
+          ).toFixed(0)
+        ),
+        color: "#f59e0b",
+      },
+      {
+       title: "Fitness Goal Progress",
+        progress:  Number (
+          Math.min(
+            (Number(data.steps) / (profile.stepsGoal || 1)) * 100,
+            100
+          ).toFixed(0)
+        ),
+        color: "#10b981",
+      },
+    ]);
+
   } catch (error) {
     console.log(error);
   }
 };
+  
+
+  useEffect(() => {
+  const loadData = async () => {
+    const profile = await fetchProfile();
+
+    if (profile) {
+      await fetchDailyProgress(profile);
+    }
+  };
+
+  loadData();
+}, []);
+
+ const fetchProfile = async () => {
+  try {
+    const res = await fetch("/api/profile");
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+
+    console.log(data);
+
+    const profile = {
+      fullName: data.fullName || "",
+      fitnessGoal: data.selectedGoal || "",
+      waterGoal: Number(data.waterGoal) || 0,
+      targetWeight: Number(data.targetWeight) || 0,
+      activityLevel: data.activityLevel || "",
+      calories: Number(data.calories) || 0,
+      stepsGoal: Number(data.stepsGoal) || 0,
+      profileImage: data.profileImage || "",
+    };
+
+    console.log("Profile =", profile);
+    console.log("Water Goal =", profile.waterGoal);
+    console.log("Steps Goal =", profile.stepsGoal);
+
+    setProfileData(profile);
+
+    setDailyStats({
+      activityScore: data.activityLevel ? 100 : 0,
+      calorieBalance: Number(data.calories) || 0,
+      hydrationLevel: Number(data.waterGoal) * 25,
+      streak: 1,
+    });
+
+    return profile;
+
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+   
 return (
     <div className="min-h-screen bg-[#f8f9fb] flex text-[#1a1a1a]">
       {/* Sidebar */}
@@ -166,8 +285,16 @@ return (
         <div className="p-4 mt-auto">
           <div className="bg-white rounded-[22px] border border-[#ececec] px-4 py-4 flex items-center gap-3">
 
-            <div className="w-11 h-11 rounded-full bg-[#f2f4f6] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-full overflow-hidden bg-[#f2f4f6] flex items-center justify-center">
+              {profileData.profileImage ? (
+                <img
+                src={profileData.profileImage}
+                alt="Profile"
+                className="w-full h-full object-cover"
+                />
+                ) : (
               <User size={18} />
+              )}
             </div>
 
             <div>
@@ -190,7 +317,7 @@ return (
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-[52px] font-extrabold tracking-tight">
+            <h1 className="text-[40px] font-extrabold tracking-tight text-[#0089aa]">
               Daily Progress
             </h1>
 
@@ -214,7 +341,6 @@ return (
 
         {/* Top Statistics Cards */}
         <div className="grid grid-cols-4 gap-6 mb-8">
-
           {/* Activity Score */}
           <div className="bg-white rounded-[28px] p-6 border border-[#f0f0f0]">
             <p className="text-[12px] font-bold text-[#555]">
@@ -228,7 +354,7 @@ return (
                 </div>
 
                 <p className="text-slate-500 text-sm mt-2">
-                  vs yesterday
+                  vs Today
                 </p>
               </div>
 
@@ -314,10 +440,18 @@ return (
           {/* Nutritional Breakdown */}
           <div className="bg-white rounded-[30px] p-8 border border-[#efefef]">
 
-            <div className="flex items-center justify-between mb-10">
-              <h2 className="text-[24px] font-bold">
+            <div className="flex items-center  justify-between mb-10">
+              <div className="flex items-center gap-3">
+                <ChartPie
+                  size={24}
+                  className="text-[#0089aa]"
+                  />
+                  
+              <h2 className="text-[20px] font-bold">
                 Nutritional Breakdown
               </h2>
+              </div>
+            
 
               <div className="bg-[#f5f6f8] rounded-full p-1 flex">
                 <button className="px-4 py-2 rounded-full bg-white text-[#0089aa] text-sm font-medium">
@@ -328,7 +462,8 @@ return (
                   Micros
                 </button>
               </div>
-            </div>
+              </div>
+    
 
             {/* Protein */}
             <div className="mb-8">
@@ -338,21 +473,15 @@ return (
                 </span>
 
                 <span className="font-semibold">
-                  {nutrition.protein.consumed}g /
-                  {nutrition.protein.goal}g
+                  60g / 120g
                 </span>
               </div>
 
               <div className="h-4 bg-[#edf0f2] rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#0089aa] to-[#7cc8d5]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#4f8da2] to-[#9fc9d6]"
                   style={{
-                    width: `${Math.min(
-                      (nutrition.protein.consumed /
-                        nutrition.protein.goal) *
-                        100,
-                      100
-                    )}%`,
+                    width: "50%",
                   }}
                 />
               </div>
@@ -366,21 +495,15 @@ return (
                 </span>
 
                 <span className="font-semibold">
-                  {nutrition.carbs.consumed}g /
-                  {nutrition.carbs.goal}g
+                  150g / 250g
                 </span>
               </div>
 
               <div className="h-4 bg-[#edf0f2] rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#4f8da2] to-[#9fc9d6]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#ffb347] to-[#ffd194]"
                   style={{
-                    width: `${Math.min(
-                      (nutrition.carbs.consumed /
-                        nutrition.carbs.goal) *
-                        100,
-                      100
-                    )}%`,
+                    width: "60%",
                   }}
                 />
               </div>
@@ -394,21 +517,15 @@ return (
                 </span>
 
                 <span className="font-semibold">
-                  {nutrition.fats.consumed}g /
-                  {nutrition.fats.goal}g
+                  35g / 70g
                 </span>
               </div>
 
               <div className="h-4 bg-[#edf0f2] rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#b46b00] to-[#d7b28a]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#ff6b6b] to-[#ff9f43]"
                   style={{
-                    width: `${Math.min(
-                      (nutrition.fats.consumed /
-                        nutrition.fats.goal) *
-                        100,
-                      100
-                    )}%`,
+                    width: "50%",
                   }}
                 />
               </div>
@@ -452,28 +569,46 @@ return (
           </div>
           {/* Steps Tracker */}
           <div className="bg-white rounded-[30px] p-8 border border-[#efefef]">
-            <h2 className="text-[24px] font-bold">
+            <div className="flex items-center gap-2">
+            <Footprints className="text-[#0089aa]" />
+            <h2 className="text-[20px] font-bold">
               Steps Tracker
             </h2>
+            </div>
 
             <p className="text-slate-500 mt-2">
               Stay active and hit your daily target.
             </p>
+            <div className="h-[320px] flex items-end justify-center gap-5 mt-8">
 
-            <div className="h-[290px] flex items-end justify-center gap-4 mt-8">
-              {stepHeights.map((h, index) => (
+             {stepHeights.map((h, index) => {
+               const isToday = index === currentIndex;
+
+               return (
+              <div
+                key={index}
+                className="relative w-10 h-[300px] rounded-full bg-[#e9edf1] overflow-hidden"
+              >
+
                 <div
-                  key={index}
-                  className={`w-8 rounded-full ${
-                    index === 3
-                      ? "bg-[#0089aa]"
-                      : "bg-[#e9edf1]"
+                  className={`absolute bottom-0 left-0 w-full rounded-full ${
+                    isToday
+                    ? "bg-[#0089aa]"
+                    : "bg-slate-300"
                   }`}
-                  style={{ height: `${h}px` }}
+                  style={{
+                   height: `${Math.min(
+                    (Number(h) / 
+                  Number(profileData.stepsGoal || 1)) * 
+                  100,
+                    100
+                   )}%`,
+                  }}
                 />
-              ))}
-            </div>
-
+                  </div>
+                );
+              })}
+          </div>
             <div className="grid grid-cols-7 text-center text-sm mt-3 text-slate-500">
               <span>Mon</span>
               <span>Tue</span>
@@ -484,10 +619,31 @@ return (
               <span>Sun</span>
             </div>
 
-            <button className="w-full mt-8 h-14 rounded-full bg-[#0089aa] text-white font-medium flex items-center justify-center gap-2">
-              <Plus size={18} />
-              Log Activity
-            </button>
+           <div className="mt-8 rounded-2xl bg-slate-50 p-5 border border-slate-100">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-slate-500">
+                 Today's Goal
+                </p>
+
+                <span className="font-bold text-[#0089aa]">
+                  {steps} / {profileData.stepsGoal}
+                </span>
+              </div>
+
+            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+             <div
+                className="h-full bg-[#0089aa] rounded-full"
+                style={{
+                  width: `${(steps / profileData.stepsGoal) * 100}%`,
+                }}
+              />
+            </div>
+
+             <p className="mt-3 text-xs text-slate-500">
+               {Math.max(profileData.stepsGoal - steps, 0)} steps remaining
+             </p>
+
+          </div>
           </div>
 
         </div>
@@ -500,8 +656,8 @@ return (
 
             <div className="flex items-center gap-3 mb-8">
               <Target className="text-[#0089aa]" />
-              <h2 className="text-[24px] font-bold">
-                Set Goal
+              <h2 className="text-[20px] font-bold">
+                Goal Setup
               </h2>
             </div> 
 
@@ -551,24 +707,16 @@ return (
               </span>
               
             </div>
-
-            <button className="w-full mt-6 text-[#0089aa] font-medium">
-              View All Goals
-            </button>
-
           </div>
 
           {/* Dynamic Milestones */}
           <div className="bg-white rounded-[30px] p-8 border border-[#efefef]">
 
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-[24px] font-bold">
+            <div className="flex items-center gap-3 mb-8">
+               <TrendingUp className="text-[#0089aa]" />
+              <h2 className="text-[20px] font-bold">
                 Goal Tracker
               </h2>
-
-              <button className="w-12 h-12 rounded-full bg-[#0089aa] text-white flex items-center justify-center">
-                <Plus />
-              </button>
             </div>
 
             {milestones.map((item, index) => (
@@ -578,26 +726,26 @@ return (
                   <span>{item.title}</span>
 
                   <span>
-                    {item.progress}%
+                    {Number(item.progress).toFixed(0)}%
                   </span>
                 </div>
 
                 <div className="h-2 bg-[#edf0f2] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-[#0089aa]"
-                    style={{
-                      width: `${item.progress}%`,
+                      style={{
+                        width: `${Math.max(
+                        0,
+                        Math.min(Number(item.progress) || 0, 
+                      100)
+                        )}%`,
+                        backgroundColor: item.color,
                     }}
                   />
                 </div>
 
               </div>
             ))}
-
-            <button className="w-full text-[#0089aa] font-medium mt-8">
-              View All Milestones
-            </button>
-
           </div>
 
         </div>
