@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createUser, getStoredSettings, applyTheme } from "../../lib/auth";
+import PageTransition from "../components/PageTransition";
+import { getStoredSettings, applyTheme } from "../../lib/auth";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -19,25 +20,53 @@ export default function SignupPage() {
     applyTheme(settings.theme || "light");
   }, []);
 
-  const handleSignup = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
+ const handleSignup = async (
+  event: FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+  setError("");
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
+  if (!name || !email || !password || !confirmPassword) {
+    setError("Please fill in all fields.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/auth/signup",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message);
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    createUser({ name, email, password });
     router.push("/login");
-  };
+  } catch (error) {
+    setError("Something went wrong");
+  }
+};
 
   return (
+    <PageTransition>
     <main className="min-h-screen flex items-center justify-center bg-[#f5f7f9] text-slate-900 dark:bg-slate-950 dark:text-slate-100 p-6">
       <div className="w-full max-w-4xl rounded-[2rem] overflow-hidden bg-white shadow-2xl ring-1 ring-black/5 dark:bg-slate-900">
         <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -153,5 +182,6 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+    </PageTransition>
   );
 }

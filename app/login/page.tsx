@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getStoredSettings, applyTheme, validateCredentials } from "../../lib/auth";
-
+import PageTransition from "../components/PageTransition";
+import { getStoredSettings, applyTheme } from "../../lib/auth";
 export default function LoginPage() {
   const router = useRouter();
   const [showGooglePopup, setShowGooglePopup] = useState(false);
@@ -18,21 +18,44 @@ export default function LoginPage() {
     applyTheme(settings.theme || "light");
   }, []);
 
-  const handleLogin = () => {
-    setError("");
+ const handleLogin = async () => {
+  setError("");
 
-    if (!email || !password) {
-      setError("Please enter your email and password.");
+  if (!email || !password) {
+    setError("Please enter your email and password.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message);
       return;
     }
 
-    if (validateCredentials(email, password)) {
-      router.push("/dashboard");
-      return;
-    }
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
 
-    setError("Invalid email or password. Please try again.");
-  };
+    router.push("/dashboard");
+
+  } catch (error) {
+    setError("Something went wrong");
+  }
+};
 
   const googleAccounts = [
     {
@@ -53,7 +76,7 @@ export default function LoginPage() {
   ];
 
   return (
-    <>
+    <PageTransition>
       <main className="min-h-screen flex bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 
         {/* Left Side */}
@@ -69,12 +92,12 @@ export default function LoginPage() {
                 width={40}
                 height={40}
               />
-              <h2 className="text-2xl font-bold text-cyan-700 dark:text-cyan-300">
+              <h2 className="text-[28px] font-bold text-cyan-700 dark:text-cyan-300">
                 NutriPlan
               </h2>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 dark:text-gray-100">
+            <h1 className="text-[40px] font-bold text-gray-900 mb-2 dark:text-gray-100">
               Welcome!
             </h1>
 
@@ -202,7 +225,7 @@ export default function LoginPage() {
 
           <div className="bg-white rounded-3xl w-[420px] p-6 shadow-2xl dark:bg-slate-900">
 
-            <h2 className="text-2xl font-bold mb-2">
+            <h2 className="text-[28px] font-bold mb-2">
               Choose an account
             </h2>
 
@@ -251,6 +274,6 @@ export default function LoginPage() {
 
         </div>
       )}
-    </>
+     </PageTransition>
   );
 }

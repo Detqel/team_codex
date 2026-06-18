@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getStoredSettings, applyTheme } from "../../lib/auth";
-
+import PageTransition from "../components/PageTransition";
 export default function Dashboard() {
   const [selectedContact, setSelectedContact] = useState<string | null>(null);
 
@@ -14,67 +13,25 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-[#f5f6f8] text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex overflow-hidden">
+      <PageTransition>
+      <main className="w-full min-h-screen bg-[#f5f6f8] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <div className="flex justify-between items-start mb-8">
 
-      {/* Sidebar */}
-      <aside className="w-[275px] bg-white border-r border-gray-100 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between flex-shrink-0">
-        <div>
+  <div>
+    <h1 className="text-[30px] font-semibold text-cyan-700 leading-tight">
+      Your Nutrition Hub
+    </h1>
 
-          {/* Logo */}
-          <div className="p-6 flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="NutriPlan Logo"
-              width={40}
-              height={40}
-            />
-            <h1 className="text-2xl font-semibold text-cyan-700">
-              NutriPlan
-            </h1>
-          </div>
+    <p className="text-base text-gray-500 mt-1 dark:text-slate-400">
+      Track, plan, and optimize your health goals.
+    </p>
+  </div>
 
-          {/* Menu */}
-          <nav className="px-3 space-y-1">
-
-            <button className="w-full bg-cyan-700 text-white rounded-xl px-5 py-3 text-left flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Dashboard
-            </button>
-
-            <button className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              Meal Planner
-            </button>
-
-            <button className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              Grocery List
-            </button>
-
-            <button className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Daily Progress
-            </button>
-
-            <button className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Profile
-            </button>
-
-          <Link href="/settings" className="w-full px-5 py-3 text-left hover:bg-gray-100 rounded-xl flex items-center gap-3 text-gray-700">
+  {/* User Icon */}
+  <button className="w-12 h-12 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center hover:shadow-lg transition">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="w-5 h-5"
+      className="w-6 h-6 text-cyan-700"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -83,96 +40,12 @@ export default function Dashboard() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
       />
     </svg>
+  </button>
 
-    Settings
-  </Link>
-
-          </nav>
-        </div>
-
-        {/* Bottom */}
-        <div className="p-4">
-
-
-
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 px-9 py-8 overflow-y-auto">
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-[42px] font-semibold text-cyan-800 leading-tight">
-              Welcome to NutriPlan!
-            </h1>
-            <p className="text-base text-gray-500 mt-1 dark:text-slate-400">
-              Your personalized nutrition dashboard
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Bell icon */}
-            <div className="relative cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
-            </div>
-
-
-          </div>
-        </div>
-
-        {/* Top Feature Cards */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-              </svg>
-            </div>
-            <h3 className="text-base font-semibold mb-1">Personalized Nutrition</h3>
-            <p className="text-gray-500 text-sm dark:text-slate-400">
-              Tailored meal plans that adapt to your unique dietary needs, preferences, and fitness goals.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
-              </svg>
-            </div>
-            <h3 className="text-base font-semibold mb-1">AI-Powered Discovery</h3>
-            <p className="text-gray-500 text-sm dark:text-slate-400">
-              Our smart engine suggests new recipes and snacks based on what you actually love to eat.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm text-center dark:bg-slate-900">
-            <div className="w-14 h-14 bg-cyan-50 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-cyan-800">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-            </div>
-            <h3 className="text-base font-semibold mb-1">Seamless Integration</h3>
-            <p className="text-gray-500 text-sm dark:text-slate-400">
-              Automatically sync your meal plans with popular grocery delivery services in just one tap.
-            </p>
-          </div>
-
-        </div>
+</div>
 
         {/* Feature Action Cards */}
         <div className="grid grid-cols-3 gap-6 mb-8">
@@ -220,10 +93,10 @@ export default function Dashboard() {
           {/* Nutrient Analyzer */}
           <div className="bg-white rounded-2xl p-6 shadow-sm relative overflow-hidden dark:bg-slate-900">
             <div className="flex items-center gap-3 mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6  text-cyan-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
               </svg>
-              <h3 className="text-orange-500 text-base font-semibold">Nutrient Analyzer</h3>
+              <h3 className="text-cyan-700 text-base font-semibold">Nutrient Analyzer</h3>
             </div>
             <p className="text-gray-500 text-sm mb-6 dark:text-slate-400">
               Deep-dive into your intake with laboratory-grade precision for vitamins, minerals, and macros.
@@ -236,89 +109,145 @@ export default function Dashboard() {
               </svg>
             </div>
           </div>
+          
+        </div>
+       
+        {/* Nutrition Journey Overview */}
 
+   {/* Left Side */}
+<div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+
+  {/* Left Side */}
+  <div className="max-w-2xl">
+
+    <h2 className="text-3xl font-bold text-cyan-700 mb-4">
+      Start Your Nutrition Journey 🚀
+    </h2>
+
+    <div className="w-16 h-1 bg-cyan-500 rounded-full mb-5"></div>
+
+    <p className="text-gray-600 text-lg leading-relaxed mb-8">
+      Everything you need to plan meals, manage nutrition,
+      track progress, and achieve your health goals.
+    </p>
+
+    <div className="grid grid-cols-2 gap-6">
+
+      <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-cyan-50 transition">
+        <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center text-xl">
+          🎯
         </div>
 
-        {/* Meals Section */}
-        <h2 className="text-xl font-semibold mb-5 text-cyan-800">Featured Meal Recommendations</h2>
+        <div>
+          <h4 className="font-semibold text-cyan-700">
+            Personalized Meal Planning
+          </h4>
 
-        <div className="grid grid-cols-3 gap-6">
-
-          {/* Quinoa Feta Salad */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative">
-              <Image
-                src="/salad.jpg"
-                alt="Salad"
-                width={500}
-                height={300}
-                className="w-full h-[200px] object-cover"
-              />
-              <div className="absolute top-3 left-3 flex gap-2">
-                <span className="bg-cyan-700 text-white text-xs font-medium px-2.5 py-1 rounded-full">LUNCH</span>
-                <span className="bg-green-500 text-white text-xs font-medium px-2.5 py-1 rounded-full">HEALTHY</span>
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="text-base font-semibold mb-1">Quinoa Feta Salad</h3>
-              <p className="text-sm text-gray-500 mb-3">420 kcal • 15 min prep</p>
-              <div className="flex gap-2">
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">Keto</span>
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">Organic</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Pan-Seared Salmon */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative">
-              <Image
-                src="/salmon.jpg"
-                alt="Salmon"
-                width={500}
-                height={300}
-                className="w-full h-[200px] object-cover"
-              />
-              <div className="absolute top-3 left-3 flex gap-2">
-                <span className="bg-cyan-900 text-white text-xs font-medium px-2.5 py-1 rounded-full">DINNER</span>
-                <span className="bg-cyan-600 text-white text-xs font-medium px-2.5 py-1 rounded-full">PROTEIN</span>
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="text-base font-semibold mb-1">Pan-Seared Salmon</h3>
-              <p className="text-sm text-gray-500 mb-3">580 kcal • 25 min prep</p>
-              <div className="flex gap-2">
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">High Protein</span>
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">Omega-3</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Berry Power Smoothie */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative">
-              <Image
-                src="/smoothie.jpg"
-                alt="Smoothie"
-                width={500}
-                height={300}
-                className="w-full h-[200px] object-cover"
-              />
-              <div className="absolute top-3 left-3 flex gap-2">
-                <span className="bg-orange-500 text-white text-xs font-medium px-2.5 py-1 rounded-full">SNACK</span>
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="text-base font-semibold mb-1">Berry Power Smoothie</h3>
-              <p className="text-sm text-gray-500 mb-3">210 kcal • 5 min prep</p>
-              <div className="flex gap-2">
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">Antioxidants</span>
-                <span className="border border-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">Vegan</span>
-              </div>
-            </div>
-          </div>
-
+          <p className="text-sm text-gray-500">
+            Plans tailored to your goals and preferences.
+          </p>
         </div>
+      </div>
+
+      <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-cyan-50 transition">
+        <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center text-xl">
+          🛒
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-cyan-700">
+            Smart Grocery Lists
+          </h4>
+
+          <p className="text-sm text-gray-500">
+            Generate organized shopping lists instantly.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-cyan-50 transition">
+        <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center text-xl">
+          📈
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-cyan-700">
+            Progress Monitoring
+          </h4>
+
+          <p className="text-sm text-gray-500">
+            Track your nutrition journey every day.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-cyan-50 transition">
+        <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center text-xl">
+          🧪
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-cyan-700">
+            Nutrient Analysis
+          </h4>
+
+          <p className="text-sm text-gray-500">
+            Monitor calories, protein and vitamins.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  {/* Right Side Image */}
+  <div className="hidden lg:flex flex-shrink-0 justify-center items-center">
+    <Image
+      src="/healthy-food.png"
+      alt="Healthy Food"
+      width={300}
+      height={300}
+     className="object-cover rounded-3xl border-4 border-white shadow-xl"
+    />
+  </div>
+
+</div>
+  {/* Bottom Stats */}
+  <div className="mt-10 pt-6 border-t border-cyan-100">
+
+    <div className="grid grid-cols-5 gap-4 text-center">
+
+      <div>
+        <h3 className="text-2xl font-bold text-cyan-700">2.5K+</h3>
+        <p className="text-sm text-gray-500">Happy Users</p>
+      </div>
+
+      <div>
+        <h3 className="text-2xl font-bold text-cyan-700">12K+</h3>
+        <p className="text-sm text-gray-500">Meals Planned</p>
+      </div>
+
+      <div>
+        <h3 className="text-2xl font-bold text-cyan-700">98%</h3>
+        <p className="text-sm text-gray-500">Goal Success</p>
+      </div>
+
+      <div>
+        <h3 className="text-2xl font-bold text-cyan-700">4.8/5</h3>
+        <p className="text-sm text-gray-500">User Rating</p>
+      </div>
+
+      <div>
+        <h3 className="text-2xl font-bold text-cyan-700">100%</h3>
+        <p className="text-sm text-gray-500">Safe & Secure</p>
+      </div>
+
+    </div>
+
+  </div>
+
+
 
         {/* Footer */}
         <footer className="mt-10 bg-gray-100 rounded-2xl px-8 py-6 flex justify-between items-center">
@@ -337,8 +266,6 @@ export default function Dashboard() {
           </div>
         </footer>
 
-      </main>
-
       {/* Floating Action Button */}
       <button className="fixed bottom-8 right-8 w-12 h-12 bg-cyan-700 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-cyan-800 transition-colors z-50">
         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -346,6 +273,7 @@ export default function Dashboard() {
         </svg>
       </button>
 
-    </div>
+    </main>
+   </PageTransition>
   );
 }

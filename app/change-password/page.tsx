@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { changePassword, getStoredSettings, applyTheme } from "../../lib/auth";
+import {
+  getStoredSettings,
+  applyTheme
+} from "../../lib/auth";
 
 export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -16,32 +19,78 @@ export default function ChangePasswordPage() {
     applyTheme(settings.theme || "light");
   }, []);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setMessage("");
+  const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("Please complete all password fields.");
+  setError("");
+  setMessage("");
+
+  if (
+    !currentPassword ||
+    !newPassword ||
+    !confirmPassword
+  ) {
+    setError(
+      "Please complete all password fields."
+    );
+    return;
+  }
+
+  if (
+    newPassword !==
+    confirmPassword
+  ) {
+    setError(
+      "New passwords do not match."
+    );
+    return;
+  }
+
+  try {
+    const user = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
+
+    const response = await fetch(
+      "/api/auth/change-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          currentPassword,
+          newPassword,
+        }),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      setError(data.message);
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      setError("New passwords do not match.");
-      return;
-    }
+    setMessage(
+      "Password updated successfully."
+    );
 
-    const result = changePassword(currentPassword, newPassword);
-    if (!result.success) {
-      setError(result.error || "Unable to update password.");
-      return;
-    }
-
-    setMessage("Password updated successfully. Use your new password to login.");
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-  };
+
+  } catch (error) {
+    setError(
+      "Something went wrong"
+    );
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#f5f7f9] text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex items-center justify-center p-6">
