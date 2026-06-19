@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
+<<<<<<< HEAD
 import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
+=======
+import { connectDB } from "../../lib/mongodb";
+import User from "../../models/user";
+>>>>>>> 1c8632679965e268a07ab93fca4b8da9e4ab9984
 
 export async function POST(req: Request) {
   try {
@@ -8,6 +13,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
+<<<<<<< HEAD
     console.log("Received Data:", body);
 
    const user = await User.findOneAndUpdate(
@@ -35,6 +41,16 @@ export async function POST(req: Request) {
         message: error.message,
         error,
       },
+=======
+    const user = await User.create(body);
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.log(error);
+
+    return NextResponse.json(
+      { message: "Error saving profile" },
+>>>>>>> 1c8632679965e268a07ab93fca4b8da9e4ab9984
       { status: 500 }
     );
   }
@@ -47,6 +63,7 @@ export async function GET() {
     const user = await User.findOne().sort({ _id: -1 });
 
     return NextResponse.json(user);
+<<<<<<< HEAD
   } catch (error: any) {
     console.error("GET Error:", error);
 
@@ -55,6 +72,13 @@ export async function GET() {
         success: false,
         message: error.message,
       },
+=======
+  } catch (error) {
+    console.log(error);
+
+    return NextResponse.json(
+      { message: "Error fetching profile" },
+>>>>>>> 1c8632679965e268a07ab93fca4b8da9e4ab9984
       { status: 500 }
     );
   }
