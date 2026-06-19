@@ -30,3 +30,6 @@ const getIngredients = async (req, res) => {
   }
 };
 module.exports = { getIngredients };
+
+
+
