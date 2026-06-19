@@ -121,10 +121,8 @@ export default function Dashboard() {
   <div className="max-w-2xl">
 
     <h2 className="text-3xl font-bold text-cyan-700 mb-4">
-      Start Your Nutrition Journey 🚀
+      Start Your Nutrition Journey 
     </h2>
-
-    <div className="w-16 h-1 bg-cyan-500 rounded-full mb-5"></div>
 
     <p className="text-gray-600 text-lg leading-relaxed mb-8">
       Everything you need to plan meals, manage nutrition,

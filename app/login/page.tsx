@@ -59,8 +59,8 @@ export default function LoginPage() {
 
   const googleAccounts = [
     {
-      name: "Google User",
-      email: "googleuser@example.com",
+      name: "Alex Johnson",
+      email: "alexjohnson@gmail.com",
       image: "/profile.jpg",
     },
     {

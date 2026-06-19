@@ -4,18 +4,50 @@ const UserSchema = new mongoose.Schema({
   name: {
     type: String,
   },
-
   email: {
-    type: String,
-    required: true,
-    unique: true,
+  type: String,
+},
+
+password: {
+  type: String,
+},
+  fullName: String,
+  username: String,
+  dob: String,
+  gender: String,
+  bio: String,
+
+  foodPreference: String,
+  activityLevel: String,
+  selectedGoal: String,
+
+  calories: Number,
+  waterGoal: String,
+  stepsGoal: String,
+  checkInTime: String,
+
+  weight: String,
+  height: String,
+  targetWeight: String,
+
+  dailySteps: Number,
+  waterConsumed: Number,
+
+  weeklySteps: {
+    mon: Number,
+    tue: Number,
+    wed: Number,
+    thu: Number,
+    fri: Number,
+    sat: Number,
+    sun: Number,
   },
 
-  password: {
-    type: String,
-    required: true,
-  },
+  profileImage: String,
 });
 
-export default mongoose.models.User ||
+const User =
+  mongoose.models.User ||
   mongoose.model("User", UserSchema);
+
+export default User;

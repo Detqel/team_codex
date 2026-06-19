@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
@@ -66,7 +66,8 @@ export default function ProfilePage() {
   const [calories, setCalories] = useState(2200);
   const [checkInTime, setCheckInTime] = useState("");
   const [waterGoal, setWaterGoal] = useState("");
-  const [stepsGoal, setStepsGoal] = useState("10000");
+  const [stepsGoal, setStepsGoal] = useState("");
+  
 
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
@@ -75,23 +76,100 @@ export default function ProfilePage() {
   const [profileImage, setProfileImage] =
     useState<string | null>(null);
 
+  useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch("/api/profile");
+      const data = await res.json();
+
+      if (data) {
+        setFullName(data.fullName || "");
+        setUsername(data.username || "");
+        setDob(data.dob || "");
+        setGender(data.gender || "");
+        setWeight(data.weight || "");
+        setHeight(data.height || "");
+        setTargetWeight(data.targetWeight || "");
+        setBio(data.bio || "");
+        setFoodPreference(data.foodPreference || "");
+        setActivityLevel(data.activityLevel || "");
+        setSelectedGoal(data.selectedGoal || "");
+        setCalories(data.calories || 2200);
+        setWaterGoal(data.waterGoal || "");
+        setStepsGoal(data.stepsGoal || "");
+        setCheckInTime(data.checkInTime || "");
+        setProfileImage(data.profileImage || null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = e.target.files?.[0];
+   const file = e.target.files?.[0];
 
-    if (!file) return;
+   if (!file) return;
 
-    setProfileImage(URL.createObjectURL(file));
+   const reader = new FileReader();
+
+   reader.onloadend = () => {
+    setProfileImage(reader.result as string);
+   };
+
+   reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
-    alert("Profile Saved Successfully");
-  };
+ const handleSave = async () => {
+  try {
+    const response = await fetch("/api/profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName,
+        username,
+        dob,
+        gender,
+        bio,
+        foodPreference,
+        activityLevel,
+        selectedGoal,
+        calories,
+        waterGoal,
+        stepsGoal,
+        checkInTime,
+        weight,
+        height,
+        targetWeight,
+        profileImage,
+      }),
+    });
+
+    const data = await response.json();
+
+    console.log("API Response:", data);
+
+    if (response.ok) {
+      alert("Profile Saved Successfully");
+    } else {
+      alert(data.message || "Failed to save profile");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-slate-50 text-black">
 
+      
 
       {/* Main */}
 
@@ -101,7 +179,7 @@ export default function ProfilePage() {
         className="flex-1 px-10 py-8 overflow-y-auto"
       >
 
-        <h1 className="text-4xl text-cyan-700 font-bold mb-8">
+        <h1 className="text-4xl font-bold mb-8 text-cyan-700">
           Profile
         </h1>
 
@@ -118,7 +196,7 @@ export default function ProfilePage() {
 
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="w-48 h-48 rounded-full bg-white shadow-lg flex justify-center items-center overflow-hidden"
+                className="w-38 h-38 rounded-full bg-[#0089aa] shadow-lg flex justify-center items-center overflow-hidden"
               >
 
                 {profileImage ? (
@@ -128,8 +206,8 @@ export default function ProfilePage() {
                   />
                 ) : (
                   <User
-                    size={70}
-                    className="text-gray-400"
+                    size={60}
+                    className="text-white"
                   />
                 )}
 

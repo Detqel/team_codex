@@ -1,7 +1,9 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PageTransition from "../components/PageTransition";
+  
+
 
 type Meal = {
   id: number;
@@ -91,8 +93,28 @@ const [macroTotals, setMacroTotals] = useState({
   carbs: 210,
 });
 
-const [loggedMeals, setLoggedMeals] = useState<number[]>([]);
+const [loggedMeals, setLoggedMeals] = useState<string[]>([]);
+useEffect(() => {
+  const loadMeals = async () => {
+    const user = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
 
+    if (!user.email) return;
+
+    const res = await fetch(
+      `/api/meals/${encodeURIComponent(user.email)}`
+    );
+
+    const data = await res.json();
+
+    setLoggedMeals(
+      data.map((meal: any) => String(meal.mealId))
+    );
+  };
+
+  loadMeals();
+}, []);
 const remainingCalories =
   dailyCalorieTarget - consumedCalories;
 
@@ -105,6 +127,13 @@ const [macroData, setMacroData] = useState({
   carbs: 210,
   fat: 65,
 });
+
+useEffect(() => {
+  localStorage.setItem(
+    "loggedMeals",
+    JSON.stringify(loggedMeals)
+  );
+}, [loggedMeals]);
 
 const [aiRecommendation, setAiRecommendation] = useState(
   "High-protein meals selected for muscle gain."
@@ -139,8 +168,142 @@ const [aiRecommendation, setAiRecommendation] = useState(
     setActionMessage("Upgrade Plan clicked.");
   };
 
-  const handleLogMeal = (meal: Meal) => {
-  if (loggedMeals.includes(meal.id)) {
+  const handleGeneratePlan = () => {
+
+  const breakfastOptions = [
+    {
+      name: "Berry Almond Parfait",
+      image: mealImages.breakfast[0],
+    },
+    {
+      name: "Greek Yogurt Bowl",
+      image: mealImages.breakfast[1],
+    },
+    {
+      name: "Avocado Toast",
+      image: mealImages.breakfast[2],
+    },
+  ];
+
+  const lunchOptions = [
+    {
+      name: "Salmon Quinoa Bowl",
+      image: mealImages.lunch[0],
+    },
+    {
+      name: "Chicken Rice Bowl",
+      image: mealImages.lunch[1],
+    },
+    {
+      name: "Veggie Power Bowl",
+      image: mealImages.lunch[2],
+    },
+  ];
+
+  const dinnerOptions = [
+    {
+      name: "Lean Steak & Greens",
+      image: mealImages.dinner[0],
+    },
+    {
+      name: "Grilled Chicken Plate",
+      image: mealImages.dinner[1],
+    },
+    {
+      name: "Paneer Dinner Bowl",
+      image: mealImages.dinner[2],
+    },
+  ];
+
+  const snackOptions = [
+    {
+      name: "Apple & Nut Butter",
+      image: mealImages.snack[0],
+    },
+    {
+      name: "Protein Smoothie",
+      image: mealImages.snack[1],
+    },
+    {
+      name: "Nuts & Fruit Mix",
+      image: mealImages.snack[2],
+    },
+  ];
+
+
+  const getRandom = (items: any[]) =>
+    items[Math.floor(Math.random() * items.length)];
+
+
+  const breakfast = getRandom(breakfastOptions);
+  const lunch = getRandom(lunchOptions);
+  const dinner = getRandom(dinnerOptions);
+  const snack = getRandom(snackOptions);
+
+
+  const newPlan: Meal[] = [
+    {
+      ...mealData[0],
+      name: breakfast.name,
+      image: breakfast.image,
+    },
+    {
+      ...mealData[1],
+      name: lunch.name,
+      image: lunch.image,
+    },
+    {
+      ...mealData[2],
+      name: dinner.name,
+      image: dinner.image,
+    },
+    {
+      ...mealData[3],
+      name: snack.name,
+      image: snack.image,
+    },
+  ];
+
+
+  setMeals(newPlan);
+  setLoggedMeals([]);
+  setActionMessage("New AI meal plan generated!");
+};
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const handleLogMeal = async (meal: Meal) => {
+    await fetch("/api/meals", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: user.email,
+    mealId: meal.id,
+    mealName: meal.name,
+    calories: meal.calories,
+    protein: meal.protein,
+    carbs: meal.carbs,
+    fat: meal.fat,
+    category: meal.category,
+  }),
+});
+ await fetch("/api/meals", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: user.email,
+    mealId: meal.id,
+    mealName: meal.name,
+    calories: meal.calories,
+    protein: meal.protein,
+    carbs: meal.carbs,
+    fat: meal.fat,
+    category: meal.category,
+  }),
+});
+ if (loggedMeals.includes(String(meal.id))) {
     setActionMessage(`${meal.name} already logged`);
     return;
   }
@@ -155,10 +318,30 @@ const [aiRecommendation, setAiRecommendation] = useState(
     carbs: prev.carbs + meal.carbs,
   }));
 
-  setLoggedMeals((prev) => [...prev, meal.id]);
+ setLoggedMeals((prev) => [...prev, String(meal.id)]);;
 
   setActionMessage(`${meal.name} logged successfully`);
 };
+const [mealHistory, setMealHistory] = useState([]);
+  useEffect(() => {
+  const loadHistory = async () => {
+    const user = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
+
+    if (!user.email) return;
+
+    const res = await fetch(
+      `/api/meals/${encodeURIComponent(user.email)}`
+    );
+
+    const data = await res.json();
+
+    setMealHistory(data);
+  };
+
+  loadHistory();
+}, []);
   const handleViewDetails = (meal: Meal) => {
   setSelectedMeal(meal);
 };
@@ -185,33 +368,67 @@ const [aiRecommendation, setAiRecommendation] = useState(
   ],
 };
 
-const handleRefreshMeal = (
-  mealName: "breakfast" | "lunch" | "dinner" | "snack"
-) => {
+const handleRefreshMeal = (meal: Meal) => {
+  const mealName = meal.category;
+
+  setLoggedMeals((prev) =>
+    prev.filter((id) => id !== String(meal.id))
+  );
+  
   const images = mealImages[mealName];
 
   const randomImage =
     images[Math.floor(Math.random() * images.length)];
 
+
+  const newMeals: Record<Meal["category"], string[]> = {
+    breakfast: [
+      "Berry Almond Parfait",
+      "Greek Yogurt Bowl",
+      "Avocado Toast"
+    ],
+    lunch: [
+      "Salmon Quinoa Bowl",
+      "Chicken Rice Bowl",
+      "Veggie Power Bowl"
+    ],
+    dinner: [
+      "Lean Steak & Greens",
+      "Grilled Chicken Plate",
+      "Paneer Dinner Bowl"
+    ],
+    snack: [
+      "Apple & Nut Butter",
+      "Protein Smoothie",
+      "Nuts & Fruit Mix"
+    ],
+  };
+
+
+  const randomMeal =
+    newMeals[mealName][
+      Math.floor(Math.random() * newMeals[mealName].length)
+    ];
+
+
   setMeals((prevMeals) =>
     prevMeals.map((meal) =>
-      meal.name === mealName
+      meal.category === mealName
         ? {
             ...meal,
+            name: randomMeal,
             image: randomImage,
-            calories:
-              Math.floor(Math.random() * 250) + meal.calories,
+            calories: Math.floor(Math.random() * 250) + 200,
           }
         : meal
     )
   );
+ 
 
   setActionMessage(`New AI meal generated for ${mealName}`);
 };
 
-
   return (
-    <PageTransition>
     <>
       <style>{`
 * {
@@ -978,9 +1195,6 @@ input {
           {filteredMeals.map((meal) => (
             <article className="meal-card" key={meal.id}>
               <div className="meal-card-image">
-                <div className="meal-ai-score">
-  AI Match 96%
-</div>
                 <img
                   src={meal.image}
                   alt={meal.name}
@@ -1030,10 +1244,10 @@ input {
                  <button
   type="button"
   className="meal-action-btn meal-log-btn"
-  disabled={loggedMeals.includes(meal.id)}
+  disabled={loggedMeals.includes(String(meal.id))}
   onClick={() => handleLogMeal(meal)}
 >
-  {loggedMeals.includes(meal.id)
+  {loggedMeals.includes(String(meal.id))
     ? "Logged ✓"
     : "Log Meal"}
 </button>
@@ -1047,7 +1261,7 @@ input {
                   <button
                     type="button"
                     className="meal-action-btn meal-refresh-btn"
-                    onClick={() => handleRefreshMeal(meal.name as "breakfast" | "lunch" | "dinner" | "snack")}
+                    onClick={() => handleRefreshMeal(meal)}
                   >
                     Refresh
                   </button>
@@ -1065,9 +1279,12 @@ input {
     and fitness goals to generate a fresh meal plan.
   </p>
 
-  <button className="meal-regenerate-btn">
-    Generate AI Plan
-  </button>
+  <button 
+  className="meal-regenerate-btn"
+  onClick={handleGeneratePlan}
+>
+  Generate AI Plan
+</button>
 </section>
 {selectedMeal && (
   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
@@ -1106,6 +1323,6 @@ input {
         <div className="meal-footer-right">Copyright 2026 NutriPlan. All rights reserved.</div>
       </footer>
     </div>
-    </></PageTransition>
+    </>
   );
 }

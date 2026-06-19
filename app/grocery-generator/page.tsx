@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import PageTransition from "../components/PageTransition";
+
 type GroceryItem = {
   id: number;
   name: string;
@@ -106,6 +106,37 @@ const initialDishMap: Record<string, GroceryItem[]> = {
     { id: 4, name: "Parmesan", category: "dairy", selected: false, qty: 1 },
     { id: 5, name: "Basil", category: "vegetable", selected: false, qty: 1 },
   ],
+  "masala dosa": [
+  { id: 1, name: "Rice", category: "grain", selected: false, qty: 1 },
+  { id: 2, name: "Urad Dal", category: "protein", selected: false, qty: 1 },
+  { id: 3, name: "Potato", category: "vegetable", selected: false, qty: 1 },
+  { id: 4, name: "Onion", category: "vegetable", selected: false, qty: 1 },
+  { id: 5, name: "Oil", category: "pantry", selected: false, qty: 1 },
+],
+
+"pongal": [
+  { id: 1, name: "Rice", category: "grain", selected: false, qty: 1 },
+  { id: 2, name: "Moong Dal", category: "protein", selected: false, qty: 1 },
+  { id: 3, name: "Ghee", category: "dairy", selected: false, qty: 1 },
+  { id: 4, name: "Pepper", category: "spice", selected: false, qty: 1 },
+  { id: 5, name: "Curry Leaves", category: "vegetable", selected: false, qty: 1 },
+],
+
+"veg biryani": [
+  { id: 1, name: "Basmati Rice", category: "grain", selected: false, qty: 1 },
+  { id: 2, name: "Carrot", category: "vegetable", selected: false, qty: 1 },
+  { id: 3, name: "Beans", category: "vegetable", selected: false, qty: 1 },
+  { id: 4, name: "Onion", category: "vegetable", selected: false, qty: 1 },
+  { id: 5, name: "Biryani Masala", category: "spice", selected: false, qty: 1 },
+],
+
+"fried rice": [
+  { id: 1, name: "Rice", category: "grain", selected: false, qty: 1 },
+  { id: 2, name: "Carrot", category: "vegetable", selected: false, qty: 1 },
+  { id: 3, name: "Capsicum", category: "vegetable", selected: false, qty: 1 },
+  { id: 4, name: "Soy Sauce", category: "pantry", selected: false, qty: 1 },
+  { id: 5, name: "Egg", category: "protein", selected: false, qty: 1 },
+],
 };
 
 const fallbackItems: GroceryItem[] = [
@@ -116,11 +147,96 @@ const fallbackItems: GroceryItem[] = [
   { id: 5, name: "Bananas", category: "fruit", selected: false, qty: 1 },
 ];
 
+
+const dishOptions = [
+  // Breakfast
+  "Idli",
+  "Dosa",
+  "Masala Dosa",
+  "Pongal",
+  "Upma",
+  "Poori",
+  "Chapati",
+  "Oats Bowl",
+  "Vegetable Sandwich",
+  "Bread Omelette",
+
+  // Lunch
+  "Chicken Biryani",
+  "Veg Biryani",
+  "Mutton Biryani",
+  "Fish Curry Rice",
+  "Sambar Rice",
+  "Curd Rice",
+  "Lemon Rice",
+  "Tomato Rice",
+  "Jeera Rice",
+  "Paneer Rice",
+
+  // Dinner
+  "Paneer Tikka",
+  "Vegetable Stir Fry",
+  "Fried Rice",
+  "Pasta",
+  "Pasta Primavera",
+  "Noodles",
+  "Chapati Curry",
+  "Roti Paneer",
+  "Vegetable Soup",
+  "Chicken Curry",
+
+  // Healthy Meals
+  "Grilled Chicken",
+  "Grilled Salmon",
+  "Berry Smoothie",
+  "Green Salad",
+  "Fruit Salad",
+  "Protein Bowl",
+  "Quinoa Bowl",
+  "Sprouts Salad",
+  "Oats Smoothie",
+  "Peanut Butter Toast",
+
+  // Indian Special
+  "Chole Bhature",
+  "Rajma Rice",
+  "Dal Tadka",
+  "Palak Paneer",
+  "Aloo Paratha",
+  "Veg Pulao",
+  "Chicken Tikka",
+  "Butter Chicken",
+  "Egg Curry",
+  "Prawn Curry",
+];
+
 export default function GroceryGenerator() {
+  useEffect(() => {
+  const fetchDishes = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/grocery/dishes"
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setDishes(data.dishes);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchDishes();
+}, []);
   const router = useRouter();
   const [dish, setDish] = useState("");
   const [groceryItems, setGroceryItems] = useState<GroceryItem[]>([]);
+  const [dishes, setDishes] = useState<string[]>([]);
   const [activeMenu, setActiveMenu] = useState("Grocery List");
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const generateHealthyList = (value: string): GroceryItem[] => {
     const cleanDish = value.trim().toLowerCase();
@@ -150,9 +266,74 @@ export default function GroceryGenerator() {
     return fallbackItems;
   };
 
-  const handleGenerate = () => {
-    setGroceryItems(generateHealthyList(dish));
-  };
+  const handleGenerate = async () => {
+
+  if (!dish) {
+    alert("Please select a dish");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/grocery/generate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dish: dish,
+        }),
+      }
+    );
+
+    
+
+    const data = await response.json();
+
+if (data.items) {
+  const items = data.items.map(
+    (ingredient: string, index: number) => ({
+      id: index + 1,
+      name: ingredient,
+      category: "pantry",
+      selected: false,
+      qty: 1,
+    })
+  );
+
+  setGroceryItems(items);
+} else {
+  alert("No ingredients found");
+}
+
+
+
+  } catch (error) {
+    console.log(error);
+    alert("Generation failed");
+  }
+};
+const handleSaveGrocery = async () => {
+  try {
+    await fetch("http://localhost:5000/api/grocery", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dishName: dish,
+        items: groceryItems,
+      }),
+    });
+
+    alert("Grocery saved successfully");
+
+  } catch (error) {
+    console.log(error);
+    alert("Save failed");
+  }
+};
 
   const handleNavClick = (section: string) => {
     setActiveMenu(section);
@@ -194,20 +375,9 @@ export default function GroceryGenerator() {
   const totalSelected = groceryItems.filter((item) => item.selected).length;
   const totalQty = groceryItems.reduce((sum, item) => sum + item.qty, 0);
 
-  const quickSuggestions = [
-    "Chicken Biryani",
-    "Vegetable Stir Fry",
-    "Berry Smoothie",
-    "Grilled Salmon",
-    "Oats Bowl",
-    "Paneer Tikka",
-  ];
+  
 
-  const selectSuggestion = (suggestion: string) => {
-    setDish(suggestion);
-    setGroceryItems(generateHealthyList(suggestion));
-  };
-
+  
   const selectedDishLabel = dish.trim()
     ? dish
         .trim()
@@ -223,7 +393,6 @@ export default function GroceryGenerator() {
     : "Generate a grocery list to see AI health insights and meal suggestions.";
 
   return (
-    <PageTransition>
     <>
       <style>{`
 * {
@@ -390,12 +559,10 @@ input {
 
 .hero-panel h1 {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: clamp(2rem, 3vw, 3.2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  color: #0B7285;
-  letter-spacing: -0.5px;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: clamp(2rem, 2.5vw, 3.4rem);
+  line-height: 1.05;
+  color: #142d33;
 }
 
 .hero-description {
@@ -859,9 +1026,16 @@ input {
       <main className="main-content">
         <section className="hero-panel">
           <div>
-           <h1 className="text-4xl text-cyan-700 font-bold mb-8">
-          Grocery Generator
-        </h1>
+           <h1
+  style={{
+    color: "#0B7285",
+    fontSize: "48px",
+    fontWeight: "700",
+    fontFamily: "Arial, Helvetica, sans-serif",
+  }}
+>
+  Grocery Generator
+</h1>
             <p className="hero-description">
               Harness AI to transform your cravings into precise, healthy shopping lists optimized for your goals.
             </p>
@@ -870,32 +1044,38 @@ input {
         </section>
 
         <section className="search-panel">
-          <input
-            className="search-input"
-            value={dish}
-            onChange={(event) => setDish(event.target.value)}
-            placeholder="Type a dish (e.g., Chicken Biryani) to generate ingredients..."
-          />
-          <button className="generate-button" onClick={handleGenerate}>
-            Generate
-          </button>
-        </section>
+  <select
+    className="search-input"
+    value={dish}
+    onChange={(event) => setDish(event.target.value)}
+  >
+    <option value="">
+  Select a dish
+</option>
 
-        <section className="quick-suggestions">
-          <p>Quick meal ideas</p>
-          <div className="suggestion-list">
-            {quickSuggestions.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                className="suggestion-button"
-                onClick={() => selectSuggestion(suggestion)}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        </section>
+{dishOptions.map((item) => (
+  <option 
+    key={item} 
+    value={item.toLowerCase()}
+  >
+    {item}
+  </option>
+))}
+
+  </select>
+
+  <button className="generate-button" onClick={handleGenerate}>
+    Generate
+  </button>
+  <button 
+  className="generate-button" 
+  onClick={handleSaveGrocery}
+>
+  Save Grocery
+</button>
+</section>
+
+        
 
         <section className="content-grid">
           <div className="column column-left">
@@ -1033,6 +1213,5 @@ input {
       </footer>
     </div>
     </>
-    </PageTransition>
   );
 }
