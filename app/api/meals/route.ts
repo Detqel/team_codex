@@ -1,3 +1,10 @@
+ feature/rajiya/grocery-generator
+
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongodb";
+import MealLog from "@/lib/models/MealLog";
+
+ develop
 export async function POST(req: Request) {
   try {
     await connectDB();
