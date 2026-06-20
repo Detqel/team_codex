@@ -1,0 +1,12 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NutriPlan logo">
+  <defs>
+    <linearGradient id="leafGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0da4bf" />
+      <stop offset="100%" stop-color="#0b7285" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="28" fill="none" />
+  <circle cx="60" cy="60" r="50" fill="none" stroke="#0da4bf" stroke-width="12" opacity="0.25" />
+  <path d="M60 22 C42 44 40 70 60 90 C80 70 78 44 60 22 Z" fill="url(#leafGradient)" />
+  <path d="M60 22 C52 44 52 66 60 90" stroke="#d9f6fa" stroke-width="6" fill="none" stroke-linecap="round" />
+</svg>
