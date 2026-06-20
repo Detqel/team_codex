@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "../../lib/mongodb";
-import User from "../../models/user";
+import { connectDB } from "@/lib/mongodb";
+import User from "@/lib/models/User";
 
 export async function GET() {
   try {
@@ -12,12 +12,13 @@ export async function GET() {
     console.log("Daily Steps =", user?.dailySteps);
     console.log("Water Goal =", user?.waterGoal);
     console.log("Steps Goal =", user?.stepsGoal);
+    
+return NextResponse.json({
+  steps: Number(user?.dailySteps) || 0,
+  water: Number(user?.waterConsumed) || 0,
+  weight: Number(user?.weight) || 0,
 
-    return NextResponse.json({
-      steps: Number(user?.stepsGoal) || 0,
-      water: Number(user?.waterGoal) || 0,
-      weight: Number(user?.weight) || 0,
-
+   
       weeklySteps: user?.weeklySteps || {
         mon: 0,
         tue: 0,
