@@ -3,13 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Utensils,
-  ShoppingCart,
-  UserCircle,
   User,
   Activity,
-  Settings,
   Flame,
   Salad,
   Target,
@@ -168,70 +163,19 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex bg-slate-50 text-black">
-
-      {/* Sidebar */}
-
       
-        <aside className="w-72 bg-white/70 backdrop-blur-xl border-r border-slate-200 p-8 shadow-xl">
-
-        <div className="flex items-center gap-3 mb-12">
-
-          <img
-            src="/logo.jpg"
-            className="w-12 h-12 rounded-full"
-          />
-
-          <h1 className="text-3xl font-bold text-[#0089aa]">
-            NutriPlan
-          </h1>
-
-        </div>
-
-        <div className="space-y-3">
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100">
-            <LayoutDashboard />
-            Dashboard
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100">
-            <Utensils />
-            Meal Planner
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100">
-            <ShoppingCart />
-            Grocery List
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100">
-            <Activity />
-            Daily Progress
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-[#0089aa] text-white">
-            <UserCircle />
-            Profile
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100">
-            <Settings />
-            Settings
-          </button>
-
-        </div>
-
-      </aside>
-
       {/* Main */}
 
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex-1 px-10 py-8 overflow-y-auto"
+        className="flex-1 px-14 py-8 overflow-y-auto"
       >
 
-        <h1 className="text-5xl font-bold mb-8 text-[#0089aa]">
+        <h1 
+          className="text-4xl font-bold mb-8"
+          style={{color: "#0089aa"}} 
+        >
           Profile
         </h1>
 
@@ -673,5 +617,3 @@ export default function ProfilePage() {
 </div>
   );
 }
-      
-          

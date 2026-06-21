@@ -2,13 +2,8 @@
 
 import { useState, useEffect } from "react";
 import {
-  LayoutDashboard,
   UtensilsCrossed,
-  ClipboardList,
-  Activity,
   User,
-  Settings,
-  Calendar,
   Zap,
   Droplets,
   Flame,
@@ -218,106 +213,17 @@ export default function DailyProgressPage() {
    
 return (
     <div className="min-h-screen bg-[#f8f9fb] flex text-[#1a1a1a]">
-      {/* Sidebar */}
-      <aside className="w-[270px] bg-white border-r border-[#ececec] flex flex-col">
-
-        <div className="px-6 py-8 flex items-center gap-3">
-          <img
-            src="/logo.jpg"
-            alt="NutriPlan Logo"
-            className="w-11 h-11 rounded-full object-contain"
-          />
-
-          <h1 className="text-2xl font-bold text-cyan-700">
-            NutriPlan
-          </h1>
-        </div>
-
-        <nav className="px-4 flex-1">
-          <ul className="space-y-2">
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full text-[#404040] hover:bg-slate-50 transition">
-                <LayoutDashboard size={18} strokeWidth={2.2} />
-                <span>Dashboard</span>
-              </button>
-            </li>
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full text-[#404040] hover:bg-slate-50 transition">
-                <UtensilsCrossed size={18} strokeWidth={2.2} />
-                <span>Meal Planner</span>
-              </button>
-            </li>
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full text-[#404040] hover:bg-slate-50 transition">
-                <ClipboardList size={18} strokeWidth={2.2} />
-                <span>Grocery List</span>
-              </button>
-            </li>
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full bg-[#0089aa] text-white shadow-md">
-                <Activity size={18} strokeWidth={2.2} />
-                <span>Daily Progress</span>
-              </button>
-            </li>
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full text-[#404040] hover:bg-slate-50 transition">
-                <User size={18} strokeWidth={2.2} />
-                <span>Profile</span>
-              </button>
-            </li>
-
-            <li>
-              <button className="w-full flex items-center gap-4 px-5 py-4 rounded-full text-[#404040] hover:bg-slate-50 transition">
-                <Settings size={18} strokeWidth={2.2} />
-                <span>Settings</span>
-              </button>
-            </li>
-
-          </ul>
-        </nav>
-
-        {/* Dynamic User Card */}
-        <div className="p-4 mt-auto">
-          <div className="bg-white rounded-[22px] border border-[#ececec] px-4 py-4 flex items-center gap-3">
-
-            <div className="w-11 h-11 rounded-full overflow-hidden bg-[#f2f4f6] flex items-center justify-center">
-              {profileData.profileImage ? (
-                <img
-                src={profileData.profileImage}
-                alt="Profile"
-                className="w-full h-full object-cover"
-                />
-                ) : (
-              <User size={18} />
-              )}
-            </div>
-
-            <div>
-              <p className="text-sm font-medium">
-                {profileData.fullName || "User Name"}
-              </p>
-
-              <p className="text-xs text-slate-400">
-                {profileData.fitnessGoal || "Fitness Goal"}
-              </p>
-            </div>
-
-          </div>
-        </div>
-
-      </aside>
+     
 
       {/* Main Content */}
       <main className="flex-1 px-8 py-8">
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-[40px] font-extrabold tracking-tight text-[#0089aa]">
+            <h1 
+              className="text-[40px] font-extrabold tracking-tight"
+              style={{color: "#0089aa"}}
+            >
               Daily Progress
             </h1>
 
@@ -326,17 +232,31 @@ return (
             </p>
           </div>
 
-          <div className="flex items-center gap-3 h-14 px-5 bg-white rounded-[18px] border border-[#ececec] shadow-sm">
-            <Calendar
-              size={18}
-              className="text-[#0089aa]"
-            />
+          <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-[20px] border border-[#ececec] shadow-sm">
 
-            <input
-              type="date"
-              className="outline-none bg-transparent"
-            />
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
+               {profileData.profileImage ? (
+              <img
+              src={profileData.profileImage}
+              alt="Profile"
+              className="w-full h-full object-cover"
+              />
+               ) : (
+              <User size={20} />
+              )}
+            </div>
+
+          <div>
+            <p className="font-semibold text-sm">
+             {profileData.fullName || "User Name"}
+            </p>
+
+            <p className="text-xs text-slate-500">
+            {profileData.fitnessGoal || "Fitness Goal"}
+            </p>
           </div>
+
+        </div>
         </div>
 
         {/* Top Statistics Cards */}
